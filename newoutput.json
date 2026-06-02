@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Leanne Graham",
+    "username": "Bret",
+    "email": "Sincere@april.biz",
+    "isActive": true,
+    "roles": ["Admin", "Editor"],
+    "profile": {
+      "company": "Romaguera-Crona",
+      "city": "Gwenborough"
+    }
+  },
+  {
+    "id": 2,
+    "name": "Ervin Howell",
+    "username": "Antonette",
+    "email": "Shanna@melissa.tv",
+    "isActive": false,
+    "roles": ["Reader"],
+    "profile": {
+      "company": "Deckow-Crist",
+      "city": "Wisokyburgh"
+    }
+  },
+  {
+    "id": 3,
+    "name": "Clementine Bauch",
+    "username": "Samantha",
+    "email": "Nathan@yesenia.net",
+    "isActive": true,
+    "roles": ["Editor"],
+    "profile": {
+      "company": "Romaguera-Jacobson",
+      "city": "McKenziehaven"
+    }
+  }
+]
