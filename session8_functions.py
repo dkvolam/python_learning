@@ -20,5 +20,5 @@ def doorOpen(idCard):
     else:
         return False
     
-enterOffice('abc')    
+enterOffice(123)    
 #punchIdCard('abc')

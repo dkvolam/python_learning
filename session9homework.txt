@@ -1,0 +1,19 @@
+def changeName(name):
+    fullName=name+' volam'
+    print(fullName)
+
+person='dilip'
+changeName(person)
+
+--- you have to add your name to my list and print it, 
+names =['surya','rajes']  -- to test you have to use this 
+print before execution names and after execution names 
+this exercise is to understand mutability context
+def addItem(myList):
+    fullName=name+' volam'
+    print(fullName)
+	
+
+what is diff between deep copy and shallow copy
+
+
