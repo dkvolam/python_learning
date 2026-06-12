@@ -5,6 +5,13 @@ from dotenv import load_dotenv
 # Load environment variables from .env file (optional)
 load_dotenv()
 
+# Fix for Windows Hadoop issue - set dummy HADOOP_HOME
+if os.name == 'nt':  # Windows
+    import tempfile
+    hadoop_home = tempfile.gettempdir()
+    os.environ['HADOOP_HOME'] = hadoop_home
+    os.environ['PATH'] = hadoop_home + os.pathsep + os.environ.get('PATH', '')
+
 # Get Snowflake credentials from environment variables
 snowflake_user = os.getenv("SNOWFLAKE_USER")
 snowflake_password = os.getenv("SNOWFLAKE_PASSWORD")
@@ -14,46 +21,59 @@ snowflake_schema = os.getenv("SNOWFLAKE_SCHEMA")
 snowflake_warehouse = os.getenv("SNOWFLAKE_WAREHOUSE")
 snowflake_role = os.getenv("SNOWFLAKE_ROLE")
 
-# Initialize SparkSession with Snowflake connector
-spark = SparkSession.builder \
-    .appName("SnowflakePySpark") \
-    .config("spark.jars.packages", "net.snowflake:snowflake-jdbc:3.13.28,net.snowflake:spark-snowflake_2.12:2.11.0-spark_3.2") \
-    .getOrCreate()
-
-# Snowflake connection options
-snowflake_options = {
-    "sfUrl": snowflake_account,
-    "sfUser": snowflake_user,
-    "sfPassword": snowflake_password,
-    "sfDatabase": snowflake_database,
-    "sfSchema": snowflake_schema,
-    "sfWarehouse": snowflake_warehouse,
-    "sfRole": snowflake_role
-}
-
-# Read data from Snowflake table
+# Initialize SparkSession without Snowflake connector first (basic PySpark)
 try:
-    df_snowflake = spark.read \
-        .format("snowflake") \
-        .options(**snowflake_options) \
-        .option("dbtable", "YOUR_TABLE_NAME") \
-        .load()
+    spark = SparkSession.builder \
+        .appName("SnowflakePySpark") \
+        .config("spark.hadoop.io.native.lib.available", "false") \
+        .master("local[*]") \
+        .getOrCreate()
     
-    df_snowflake.show()
-    print(f"Successfully read {df_snowflake.count()} rows from Snowflake")
+    print("✓ SparkSession created successfully!")
+    print(f"Spark Version: {spark.version}")
+    
+    # Test basic Spark functionality
+    data = [("Alice", 25), ("Bob", 30), ("Charlie", 35)]
+    df = spark.createDataFrame(data, ["Name", "Age"])
+    df.show()
+    print("✓ Basic Spark operations working!")
+    
+    # Snowflake connection options (if credentials are provided)
+    if all([snowflake_user, snowflake_password, snowflake_account]):
+        snowflake_options = {
+            "sfUrl": snowflake_account,
+            "sfUser": snowflake_user,
+            "sfPassword": snowflake_password,
+            "sfDatabase": snowflake_database,
+            "sfSchema": snowflake_schema,
+            "sfWarehouse": snowflake_warehouse,
+            "sfRole": snowflake_role
+        }
+        
+        print("\nAttempting to connect to Snowflake...")
+        try:
+            df_snowflake = spark.read \
+                .format("snowflake") \
+                .options(**snowflake_options) \
+                .option("dbtable", "YOUR_TABLE_NAME") \
+                .load()
+            
+            df_snowflake.show()
+            print(f"✓ Successfully read {df_snowflake.count()} rows from Snowflake")
+        except Exception as e:
+            print(f"✗ Error connecting to Snowflake: {e}")
+    else:
+        print("\n⚠ Snowflake credentials not found in environment variables.")
+        print("To use Snowflake, set: SNOWFLAKE_USER, SNOWFLAKE_PASSWORD, SNOWFLAKE_ACCOUNT")
+    
 except Exception as e:
-    print(f"Error connecting to Snowflake: {e}")
+    print(f"✗ Error: {e}")
+    import traceback
+    traceback.print_exc()
+finally:
+    if 'spark' in locals():
+        spark.stop()
+        print("\n✓ SparkSession closed successfully")
 
-# Optional: Local test data
-data = [
-    (1, "Dilip", 5000, "IT"),
-    (2, "Sam", 6000, "HR"),
-    (3, "John", 7000, "IT")
-]
-columns = ["id", "name", "salary", "department"]
-df_local = spark.createDataFrame(data, columns)
-df_local.show()
 
-# Optional: Read CSV
-df_csv = spark.read.csv(r"C:\Users\dilip\Downloads\archive\data.csv", header=True, inferSchema=True)
-df_csv.show()
+
