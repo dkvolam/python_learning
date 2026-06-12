@@ -44,16 +44,5 @@ try:
 except Exception as e:
     print(f"Error connecting to Snowflake: {e}")
 
-# Optional: Local test data
-data = [
-    (1, "Dilip", 5000, "IT"),
-    (2, "Sam", 6000, "HR"),
-    (3, "John", 7000, "IT")
-]
-columns = ["id", "name", "salary", "department"]
-df_local = spark.createDataFrame(data, columns)
-df_local.show()
 
-# Optional: Read CSV
-df_csv = spark.read.csv(r"C:\Users\dilip\Downloads\archive\data.csv", header=True, inferSchema=True)
-df_csv.show()
+
