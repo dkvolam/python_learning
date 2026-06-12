@@ -8,7 +8,7 @@ employees=[
 def get_salary(emp):
     return emp['salary']
 
-print(get_salary(employees[0]))
+# print(get_salary(employees[0]))
 
-# sorted_employees=sorted(employees, key=get_salary)
-# print(sorted_employees)    
+sorted_employees=sorted(employees, key=get_salary)
+print(sorted_employees)    

@@ -1,3 +1,4 @@
+# json.dump() method is used to convert a python object into a json string and stores in a file.
 import json
 import os
 myDetails={'name':'dilip', 'city':'Bangalore'}

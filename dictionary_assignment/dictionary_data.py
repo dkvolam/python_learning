@@ -1,0 +1,1 @@
+data1= {'add':True,'sub':False,'mul':False}

@@ -11,5 +11,5 @@ data = [
 columns = ["id", "name", "salary", "department"]
 
 df = spark.createDataFrame(data, columns)
-
-df.show()
+df1= spark.read.csv(r"C:\Users\dilip\Downloads\archive\data.csv", header=True, inferSchema=True)
+df1.show()
